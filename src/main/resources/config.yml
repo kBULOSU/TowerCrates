@@ -1,0 +1,26 @@
+Crates:
+  1:
+    head-key: ""
+    name: "nome da crate"
+    displayName: "&enome para mostrar"
+    lore:
+      - ""
+    itens:
+      1:
+        chance: 50.0
+        command: "darcash <player> 1"
+        itemStack:
+          material: 276
+          data: 0
+          amount: 1
+          enchantments:
+            - "FIRE_ASPECT,1"
+      2:
+        chance: 50.0
+        command: ""
+        itemStack:
+          material: 277
+          data: 0
+          amount: 1
+          enchantments:
+            - "FIRE_ASPECT,1"

@@ -1,0 +1,8 @@
+name: TowerCrates
+version: 0.1
+author: yiatzz
+main: br.com.yiatzz.crates.CratesPlugin
+
+depend:
+  - API-Spigot
+  - HolographicDisplays
