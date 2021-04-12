@@ -1,15 +1,23 @@
 Crates:
   1:
     head-key: ""
-    name: "nome da crate"
+    name: "crate1"
     displayName: "&enome para mostrar"
     lore:
       - ""
+    hologram:
+      - "Este é um holograma."
     itens:
       1:
         chance: 50.0
-        command: "darcash <player> 1"
+        commands:
+          - "darcash <player> 1"
+          - "darcoins <player> 2"
+        chat: "mensagem"
+        title: "a"
+        subtitle: "b"
         itemStack:
+          displayName: "&enome"
           material: 276
           data: 0
           amount: 1
@@ -17,10 +25,22 @@ Crates:
             - "FIRE_ASPECT,1"
       2:
         chance: 50.0
-        command: ""
+        command:
+          - ""
+        chat: "mensagem"
+        title: "a"
+        subtitle: "b"
         itemStack:
+          displayName: "&enome"
           material: 277
           data: 0
           amount: 1
           enchantments:
             - "FIRE_ASPECT,1"
+
+Keys:
+  1:
+    crate: "nome da crate"
+    displayName: "&eKey de Crate"
+    lore:
+      - "&eEsta é key da crate <crateName>"

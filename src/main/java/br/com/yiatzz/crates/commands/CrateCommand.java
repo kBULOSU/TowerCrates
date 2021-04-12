@@ -3,6 +3,7 @@ package br.com.yiatzz.crates.commands;
 import br.com.idea.api.shared.commands.CommandRestriction;
 import br.com.idea.api.spigot.commands.CustomCommand;
 import br.com.yiatzz.crates.commands.subcommands.GiveKeySubCommand;
+import br.com.yiatzz.crates.commands.subcommands.KeyAllSubCommand;
 import br.com.yiatzz.crates.commands.subcommands.SetHeadPosSubCommand;
 
 public class CrateCommand extends CustomCommand {
@@ -12,5 +13,8 @@ public class CrateCommand extends CustomCommand {
 
         registerSubCommand(new GiveKeySubCommand());
         registerSubCommand(new SetHeadPosSubCommand());
+        registerSubCommand(new KeyAllSubCommand());
+
+        setPermission("crates.admin");
     }
 }

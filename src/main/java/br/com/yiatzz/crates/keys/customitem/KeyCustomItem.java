@@ -1,28 +1,26 @@
-package br.com.yiatzz.crates.misc.customitem;
+package br.com.yiatzz.crates.keys.customitem;
 
+import br.com.idea.api.shared.messages.MessageUtils;
 import br.com.idea.api.spigot.misc.customitem.CustomItem;
 import br.com.idea.api.spigot.misc.message.Message;
-import br.com.idea.api.spigot.misc.utils.CustomSound;
 import br.com.idea.api.spigot.misc.utils.InventoryUtils;
 import br.com.idea.api.spigot.misc.utils.ItemBuilder;
 import br.com.yiatzz.crates.CratesPlugin;
 import br.com.yiatzz.crates.CratesProvider;
 import br.com.yiatzz.crates.crate.Crate;
 import br.com.yiatzz.crates.crate.CrateItem;
+import br.com.yiatzz.crates.keys.KeySection;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.*;
+import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.greenrobot.eventbus.Subscribe;
 
-public class KeyCustomItem extends CustomItem {
+import java.util.Arrays;
 
-    private static final int MAX_ITENS = 50;
+public class KeyCustomItem extends CustomItem {
 
     public static final String KEY = "key-custom-item";
 
@@ -30,14 +28,14 @@ public class KeyCustomItem extends CustomItem {
 
     private final ItemBuilder itemBuilder;
 
-    public KeyCustomItem(Crate crate) {
+    public KeyCustomItem(Crate crate, KeySection section) {
         super(KEY + "-" + crate.getName());
 
         this.crate = crate;
 
         this.itemBuilder = new ItemBuilder(Material.TRIPWIRE_HOOK)
-                .name("&eKey de Crate")
-                .lore("&7Crate: &f" + crate.getDisplayName());
+                .name(StringUtils.replace(MessageUtils.translateColorCodes(section.getDisplayName()), "<crateName>", crate.getDisplayName()))
+                .lore(Arrays.stream(section.getLore()).map(MessageUtils::translateColorCodes).toArray(String[]::new));
     }
 
     @Override
@@ -76,15 +74,45 @@ public class KeyCustomItem extends CustomItem {
         InventoryUtils.subtractOneOnHand(player);
 
         Bukkit.getScheduler().runTaskAsynchronously(CratesPlugin.getInstance(), () -> {
-            player.getLocation().getWorld().spigot().playEffect(player.getLocation(),
-                    Effect.WITCH_MAGIC, 1, 0, 0.5F, 0.1F, 0.5F, 1, 100, 15);
+            player.playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
         });
 
-        CustomSound.GOOD.play(player);
+        Location location = crate.getHead().getLocation();
+
+        Firework entity = (Firework) location.getWorld().spawnEntity(location.clone().add(0.0, 3.5, 0.0), EntityType.FIREWORK);
+        FireworkMeta fireworkMeta = entity.getFireworkMeta();
+
+        fireworkMeta.setPower(2);
+        fireworkMeta.addEffect(
+                FireworkEffect.builder()
+                        .withColor(Color.FUCHSIA)
+                        .withColor(Color.LIME)
+                        .flicker(true)
+                        .build()
+        );
+
+        entity.setFireworkMeta(fireworkMeta);
+
+        Bukkit.getScheduler().runTaskLater(CratesPlugin.getInstance(), entity::detonate, 12);
+
+        player.playSound(player.getLocation(), Sound.EXPLODE, 1F, 1F);
 
         CrateItem item = crate.getRandomItem();
-        if (item.getCommand() != null && !item.getCommand().isEmpty()) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replace(item.getCommand(), "<player>", player.getName()));
+
+        if (item.hasChat()) {
+            player.sendMessage(MessageUtils.translateColorCodes(item.getChatMessage()));
+        }
+
+        if (item.hasTitle()) {
+            player.sendTitle(MessageUtils.translateColorCodes(item.getTitle()), MessageUtils.translateColorCodes(item.getSubTitle()));
+        }
+
+        if (!item.getCommand().isEmpty()) {
+
+            for (String command : item.getCommand()) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), StringUtils.replace(command, "<player>", player.getName()));
+            }
+
             return;
         }
 

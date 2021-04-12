@@ -26,12 +26,19 @@ public class CratesConfigLoader {
             String headKey = boxes.getString(key + ".head-key");
             String name = boxes.getString(key + ".name");
             String displayName = boxes.getString(key + ".displayName");
+            LinkedList<String> hologram = new LinkedList<>(boxes.getStringList(key + ".hologram"));
+
             LinkedList<CrateItem> boxItems = Lists.newLinkedList();
 
             ConfigurationSection items = boxes.getConfigurationSection(key + ".itens");
             for (String itemsKey : items.getKeys(false)) {
+                String itemDisplayName = items.getString(itemsKey + ".displayName");
                 double chance = items.getDouble(itemsKey + ".chance");
-                String command = items.getString(itemsKey + ".command");
+                List<String> command = items.getStringList(itemsKey + ".command");
+
+                String chatMessage = items.getString(itemsKey + ".chat");
+                String title = items.getString(itemsKey + ".title");
+                String subTitle = items.getString(itemsKey + ".subtitle");
 
                 ConfigurationSection itemStack = items.getConfigurationSection(itemsKey + ".itemStack");
                 Material material = Material.getMaterial(itemStack.getInt("material"));
@@ -69,19 +76,24 @@ public class CratesConfigLoader {
                 boxItems.add(new CrateItem(
                                 Integer.parseInt(itemsKey),
                                 itemBuilder,
+                                itemDisplayName,
                                 chance,
-                                command
+                                command,
+                                chatMessage,
+                                title,
+                                subTitle
                         )
                 );
             }
 
-            CratesProvider.Cache.Local.CRATES.provide().add(
-                    name,
-                    new Crate(
-                            name, displayName, headKey, boxItems
-                    )
+            Crate crate = new Crate(
+                    name, displayName, headKey, boxItems, hologram
             );
 
+            CratesProvider.Cache.Local.CRATES.provide().add(
+                    name,
+                    crate
+            );
         }
     }
 }

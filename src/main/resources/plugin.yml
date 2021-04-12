@@ -3,6 +3,8 @@ version: 0.1
 author: yiatzz
 main: br.com.yiatzz.crates.CratesPlugin
 
+load: POSTWORLD
+
 depend:
   - API-Spigot
   - HolographicDisplays

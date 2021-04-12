@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CratesLocalCache implements LocalCache {
 
-    public final Map<String, Crate> CACHE = Maps.newHashMap();
+    public final Map<String, Crate> CACHE = Maps.newConcurrentMap();
 
     private final LoadingCache<String, Location> LOCATIONS = Caffeine.newBuilder()
             .expireAfterWrite(5L, TimeUnit.SECONDS)
